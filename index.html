@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search pokeman</title>
+</head>
+<body>
+    <h1>Search pokeman</h1>
+    <input id="pokemonInput" type="text" placeholder="Enter name or ID of the pokeman" />
+    <button id="Searchbtn">Search</button>
+    <div id="result" class="InfoDiv"></div>
+    <div id="errormessage"></div>
+    <script>
+
+    const input = document.getElementById('pokemonInput');
+    const button = document.getElementById('Searchbtn');
+    const InfoDiv = document.getElementById('result');
+    const errorDiv = document.getElementById('errormessage');
+
+
+    async function fetchPokemon(pokemon) {
+        
+    
+    errorDiv.textContent = '';
+    InfoDiv.innerHTML = 'Loading...';
+    try {
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemon.toLowerCase()}`)
+        if (!response.ok)throw new Error ('Pokemon not found. Please try another name or ID.')
+        const data = await response.json();
+        const name = data.name;
+        const imageUrl = data.sprites.front_default;
+        const types = data.types.map(t => t.type.name);
+        
+        InfoDiv.innerHTML = `
+        <h2 style="text-transform: capitalize;">${name}</h2>
+            <img id="pokemon-image" src="${imageUrl}" alt= "${name}" />
+            <div>
+                ${types.map
+                (type => `<span class="type">${type}</span>`).join('')}
+                </div>
+                `;
+            } catch (error) {
+                InfoDiv.innerHTML ='';
+                errorDiv.textContent = error.message;
+
+
+            }
+        }
+        button.addEventListener('click', () => {
+            const pokemon = input.value.trim();
+            if (pokemon) {
+                fetchPokemon(pokemon);
+            } else {
+                
+            errorDiv.textContent = 'Please enter a pokeman name or ID';
+            InfoDiv.innerHTML= '';
+            }
+        });
+
+
+
+
+    </script>
+
+</body>
+</html>
